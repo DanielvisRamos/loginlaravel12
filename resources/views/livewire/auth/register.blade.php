@@ -45,33 +45,35 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
-
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+    <x-auth-header 
+        :title="__('Crear una cuenta')" 
+        :description="__('Ingresa tus datos a continuación para registrarte')" 
+    />
 
-    <!-- Session Status -->
+    <!-- Estado de sesión -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
+        <!-- Nombre -->
         <flux:input
             wire:model="name"
-            :label="__('Name')"
+            :label="__('Nombre')"
             type="text"
             required
             autofocus
             autocomplete="name"
-            :placeholder="__('Full name')"
+            :placeholder="__('Nombre completo')"
         />
 
-        <!-- Surname -->
+        <!-- Apellido -->
         <flux:input
             wire:model="surname"
-            :label="__('Surname')"
+            :label="__('Apellido')"
             type="text"
             required
             autocomplete="surname"
-            :placeholder="__('Full surname')"
+            :placeholder="__('Apellido completo')"
         />
 
         <!-- CI -->
@@ -81,73 +83,75 @@ new #[Layout('components.layouts.auth')] class extends Component {
             type="text"
             required
             autocomplete="off"
-            :placeholder="__('Enter your CI (e.g., 12345678)')"
+            :placeholder="__('Ingresa tu CI (ej: 12345678)')"
         />
         @error('CI') 
             <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
         @enderror
 
-        <!-- Email Address -->
+        <!-- Correo electrónico -->
         <flux:input
             wire:model="email"
-            :label="__('Email address')"
+            :label="__('Correo electrónico')"
             type="email"
             required
             autocomplete="email"
-            placeholder="email@example.com"
+            placeholder="correo@ejemplo.com"
         />
         @error('email')
             <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
         @enderror
 
-        <!-- Password -->
+        <!-- Contraseña -->
         <flux:input
             wire:model="password"
-            :label="__('Password')"
+            :label="__('Contraseña')"
             type="password"
             required
             autocomplete="new-password"
-            :placeholder="__('Password')"
+            :placeholder="__('Contraseña')"
         />
         @error('password') 
             <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
         @enderror
 
-        <!-- Confirm Password -->
+        <!-- Confirmar contraseña -->
         <flux:input
             wire:model="password_confirmation"
-            :label="__('Confirm password')"
+            :label="__('Confirmar contraseña')"
             type="password"
             required
             autocomplete="new-password"
-            :placeholder="__('Confirm password')"
+            :placeholder="__('Confirmar contraseña')"
         />
         @error('password_confirmation') 
             <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
         @enderror
 
-        <!-- Address -->
+        <!-- Dirección -->
         <flux:input
             wire:model="address"
-            :label="__('Address')"
+            :label="__('Dirección')"
             type="text"
             optional
             autocomplete="address"
-            :placeholder="__('Your address (optional)')"
+            :placeholder="__('Tu dirección (opcional)')"
         />
         @error('address') 
             <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
         @enderror
 
+        <!-- Botón para crear cuenta -->
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Create account') }}
+                {{ __('Crear cuenta') }}
             </flux:button>
         </div>
     </form>
 
+    <!-- Ya tienes cuenta -->
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        {{ __('Already have an account?') }}
-        <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+        {{ __('¿Ya tienes una cuenta?') }}
+        <flux:link :href="route('login')" wire:navigate>{{ __('Inicia sesión') }}</flux:link>
     </div>
 </div>
