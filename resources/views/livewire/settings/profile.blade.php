@@ -1,5 +1,4 @@
 <?php
-
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -9,6 +8,9 @@ use Livewire\Volt\Component;
 new class extends Component {
     public string $name = '';
     public string $email = '';
+    public string $surname = '';
+    public string $CI = '';
+    public string $address = '';  // Inicializado como cadena vacía
 
     /**
      * Mount the component.
@@ -16,7 +18,10 @@ new class extends Component {
     public function mount(): void
     {
         $this->name = Auth::user()->name;
+        $this->surname = Auth::user()->surname;
         $this->email = Auth::user()->email;
+        $this->CI = Auth::user()->CI;
+        $this->address = Auth::user()->address ?? '';  // Se asegura que no sea null
     }
 
     /**
@@ -28,15 +33,10 @@ new class extends Component {
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($user->id)
-            ],
+            'surname' => ['required', 'string', 'max:255'],
+            'CI' => ['required', 'string', 'max:15'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'address' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user->fill($validated);
@@ -67,24 +67,34 @@ new class extends Component {
 
         Session::flash('status', 'verification-link-sent');
     }
-}; ?>
+};
+?>
 
 <section class="w-full">
     @include('partials.settings-heading')
 
     <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
+            <!-- Campo Name -->
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
+            <!-- Campo Surname -->
+            <flux:input wire:model="surname" :label="__('Surname')" type="text" required autocomplete="family-name" />
+
+            <!-- Campo CI -->
+            <flux:input wire:model="CI" :label="__('CI')" type="text" required autocomplete="off" />
+
+            <!-- Campo Email -->
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
+                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div>
                         <flux:text class="mt-4">
                             {{ __('Your email address is unverified.') }}
 
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
+                            <flux:link class="text-sm cursor-pointer"
+                                wire:click.prevent="resendVerificationNotification">
                                 {{ __('Click here to re-send the verification email.') }}
                             </flux:link>
                         </flux:text>
@@ -97,6 +107,9 @@ new class extends Component {
                     </div>
                 @endif
             </div>
+
+            <!-- Campo Address -->
+            <flux:input wire:model="address" :label="__('Address')" type="text" autocomplete="address" />
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
