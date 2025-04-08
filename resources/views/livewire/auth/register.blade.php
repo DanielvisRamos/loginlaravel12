@@ -10,9 +10,12 @@ use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
+    public string $surname = '';
+    public string $CI = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $address = '';
 
     /**
      * Handle an incoming registration request.
@@ -21,16 +24,24 @@ new #[Layout('components.layouts.auth')] class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'surname' => ['required', 'string', 'max:255'],
+            'CI' => ['required', 'string', 'min:8', 'max:20', 'unique:' . User::class], // Validación de CI
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class], // Validación de email
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'address' => ['nullable', 'string', 'max:255'], // Validación para la dirección (opcional)
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['estado'] = User::ESTADO_ACTIVO; // Asignar estado activo por defecto
+        $validated['role_id'] = 2;
 
+        // Crear el usuario
         event(new Registered(($user = User::create($validated))));
 
+        // Iniciar sesión
         Auth::login($user);
 
+        // Redirigir al dashboard
         $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
@@ -53,6 +64,29 @@ new #[Layout('components.layouts.auth')] class extends Component {
             :placeholder="__('Full name')"
         />
 
+        <!-- Surname -->
+        <flux:input
+            wire:model="surname"
+            :label="__('Surname')"
+            type="text"
+            required
+            autocomplete="surname"
+            :placeholder="__('Full surname')"
+        />
+
+        <!-- CI -->
+        <flux:input
+            wire:model="CI"
+            :label="__('CI')"
+            type="text"
+            required
+            autocomplete="off"
+            :placeholder="__('Enter your CI (e.g., 12345678)')"
+        />
+        @error('CI') 
+            <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+        @enderror
+
         <!-- Email Address -->
         <flux:input
             wire:model="email"
@@ -62,6 +96,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="email"
             placeholder="email@example.com"
         />
+        @error('email')
+            <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+        @enderror
 
         <!-- Password -->
         <flux:input
@@ -72,6 +109,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="new-password"
             :placeholder="__('Password')"
         />
+        @error('password') 
+            <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+        @enderror
 
         <!-- Confirm Password -->
         <flux:input
@@ -82,6 +122,22 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="new-password"
             :placeholder="__('Confirm password')"
         />
+        @error('password_confirmation') 
+            <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+        @enderror
+
+        <!-- Address -->
+        <flux:input
+            wire:model="address"
+            :label="__('Address')"
+            type="text"
+            optional
+            autocomplete="address"
+            :placeholder="__('Your address (optional)')"
+        />
+        @error('address') 
+            <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+        @enderror
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">
