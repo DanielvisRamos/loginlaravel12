@@ -25,7 +25,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'surname' => ['required', 'string', 'max:255'],
-            'CI' => ['required', 'string', 'min:8', 'max:20', 'unique:' . User::class], // Validación de CI
+            'CI' => ['required', 'string', 'min:7', 'max:20', 'unique:' . User::class], // Validación de CI
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class], // Validación de email
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
             'address' => ['nullable', 'string', 'max:255'], // Validación para la dirección (opcional)
@@ -80,7 +80,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <flux:input
             wire:model="CI"
             :label="__('CI')"
-            type="text"
+            type="number"
             required
             autocomplete="off"
             :placeholder="__('Ingresa tu CI (ej: 12345678)')"
