@@ -1,9 +1,8 @@
 <div class="flex items-start max-md:flex-col">
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist>
-            <flux:navlist.item :href="route('events')" wire:navigate>{{ __('Crear Eventos') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('settings.password')" wire:navigate>{{ __('Reportes de Eventos') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('events.admin')" wire:navigate>{{ __('Administrar Eventos') }}</flux:navlist.item>
+            <flux:navlist.item :href="route('events')" wire:navigate>{{ __('Administrar Eventos') }}</flux:navlist.item>
+            <flux:navlist.item :href="route('events.register')" wire:navigate>{{ __('Crear Eventos') }}</flux:navlist.item>
         </flux:navlist>
     </div>
     <flux:separator class="md:hidden" />
