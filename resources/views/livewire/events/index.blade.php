@@ -114,7 +114,7 @@ new class extends Component {
         
         <!-- Buscador -->
         <div class="mb-4">
-            <flux:input type="text" wire:model.live.300ms="search" placeholder="Buscar eventos..." />
+            <flux:input type="text" wire:model.live="search" placeholder="Buscar eventos..." />
         </div>
 
         <!-- Tabla de eventos -->

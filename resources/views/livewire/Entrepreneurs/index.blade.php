@@ -1,5 +1,5 @@
 <?php
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\User;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
@@ -11,6 +11,21 @@ new class extends Component {
     public $sortDirection = 'asc';
     public $search = '';
     public $perPage = 5;
+
+    public function downloadReport()
+    {
+        // Obtenemos todos los eventos que no están eliminados
+        $entrepreneurs = User::where('estado', '!=', User::ESTADO_ELIMINADO)
+        ->where('role_id', '!=', 1)->get();
+
+        // Cargamos la vista `reports.events` pasándole los eventos
+        $pdf = Pdf::loadView('reports.Entrepreneurs', ['entrepreneurs' => $entrepreneurs]);
+
+        // Retornamos el archivo PDF como descarga directa
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream(); // Genera el contenido del PDF
+        }, 'Emprendedores.pdf'); // Nombre del archivo descargado
+    }
 
     public function sort($column)
     {
@@ -54,10 +69,13 @@ new class extends Component {
 
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ __('Emprendedores') }}</h1>
-
         <!-- Buscador con bordes completos -->
         <flux:input wire:model.live="search" type="text" icon='magnifying-glass' placeholder="{{ __('Buscar...') }}" />
+        <flux:button wire:click="downloadReport">
+                Descargar PDF
+            </flux:button>
     </div>
+    
 
     <!-- Tabla con solo bordes inferiores -->
     <div class="overflow-x-auto">
