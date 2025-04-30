@@ -19,7 +19,7 @@ return new class extends Migration
                   ->onDelete('cascade'); // Relación 1:N con eventos
             $table->string('name'); // Nombre del stand
             $table->decimal('price', 10, 2); // Precio del stand (ej: 100.50)
-            $table->enum('estado', ['disponible', 'reservado', 'ocupado', 'eliminado'])->default('available'); // Estado del stand
+            $table->enum('estado', ['disponible', 'reservado', 'ocupado', 'eliminado'])->default('disponible'); // Estado del stand
             $table->timestamps(); // created_at y updated_at
         });
     }

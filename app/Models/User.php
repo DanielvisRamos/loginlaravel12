@@ -29,6 +29,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    // User.php
+    public function phones()
+    {
+        return $this->hasMany(Phone::class); // Relación con el modelo Phone
+    }
+
+
     // Sobrescribir el método "delete" para cambiar el estado en lugar de eliminar
     public function delete()
     {
@@ -36,14 +43,13 @@ class User extends Authenticatable
         $this->save();
     }
     public function initials(): string
-{
-    $nombres = explode(' ', trim($this->name));
-    $apellidos = explode(' ', trim($this->surname));
+    {
+        $nombres = explode(' ', trim($this->name));
+        $apellidos = explode(' ', trim($this->surname));
 
-    $inicialNombre = $nombres[0][0] ?? '';
-    $inicialApellido = $apellidos[0][0] ?? '';
+        $inicialNombre = $nombres[0][0] ?? '';
+        $inicialApellido = $apellidos[0][0] ?? '';
 
-    return strtoupper($inicialNombre . $inicialApellido);
-}
-
+        return strtoupper($inicialNombre . $inicialApellido);
+    }
 }

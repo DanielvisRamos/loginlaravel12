@@ -16,9 +16,22 @@ new class extends Component {
 
     // Arreglo para almacenar los datos editables de cada evento
     public $editing = [];
+    
+    public $sortDirection = 'asc';
+    public $sortBy = 'name';
 
     // Usamos el trait WithPagination para paginar los resultados
     use WithPagination;
+
+    public function sort($column)
+    {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+    }
 
     // Método que se ejecuta cuando cambia el valor de búsqueda
     // Reinicia la página actual para evitar errores de paginación
@@ -51,8 +64,8 @@ new class extends Component {
                 $query->where('name', 'like', "%{$this->search}%")
                       ->orWhere('description', 'like', "%{$this->search}%");
             })
-            ->orderBy('start_date', 'desc') // Orden descendente por fecha de inicio
-            ->paginate($this->perPage);     // Paginación
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate($this->perPage);
     }
 
     // Carga los datos de un evento para editar
@@ -102,10 +115,10 @@ new class extends Component {
 ?>
 
 
-<section class="">
+<section class="w-full space-y-6">
     @include('partials.events-heading')
 
-    <x-settings.layoutevents :subheading="__('Administra los eventos del Sakura Fest')">
+    <x-settings.layoutevents>
         <div class="flex justify-end mb-4">
             <flux:button wire:click="downloadReport">
                 Descargar PDF
@@ -114,7 +127,7 @@ new class extends Component {
         
         <!-- Buscador -->
         <div class="mb-4">
-            <flux:input type="text" wire:model.live="search" placeholder="Buscar eventos..." />
+            <flux:input type="text" wire:model.live="search" icon='magnifying-glass' placeholder="{{ __('Buscar...') }}" />
         </div>
 
         <!-- Tabla de eventos -->
@@ -122,10 +135,19 @@ new class extends Component {
             <table class="min-w-full">
                 <thead class="border-b border-gray-300 dark:border-gray-600">
                     <tr>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        <th wire:click="sort('name')"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center gap-1">
                             {{ __('Nombre') }}
-                        </th>
+                            @if ($sortBy === 'name')
+                                @if ($sortDirection === 'asc')
+                                    ↑
+                                @else
+                                    ↓
+                                @endif
+                            @endif
+                        </div>
+                    </th>
                         <th
                             class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             {{ __('Descripción') }}

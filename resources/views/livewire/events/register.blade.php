@@ -120,4 +120,3 @@ $save = function () {
         </form>
     </x-settings.layout>
 </section>
-
