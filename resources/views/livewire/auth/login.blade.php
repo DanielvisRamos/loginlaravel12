@@ -17,23 +17,31 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public bool $remember = false;
 
     public function login(): void
-    {
-        $this->validate();
+{
+    $this->validate();
 
-        if (! Auth::attempt([
-            'email' => $this->email,
-            'password' => $this->password,
-            'estado' => 'activo', // <-- opcional: si usás campo "estado"
-        ], $this->remember)) {
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
-
-        session()->regenerate();
-
-        $this->redirectIntended(route('dashboard'));
+    if (! Auth::attempt([
+        'email' => $this->email,
+        'password' => $this->password,
+        'estado' => 'activo',
+    ], $this->remember)) {
+        throw ValidationException::withMessages([
+            'email' => __('auth.failed'),
+        ]);
     }
+
+    session()->regenerate();
+
+    $user = Auth::user();
+
+    // Verificamos el rol y redirigimos según el caso
+    if ($user->role?->name === 'admin') {
+        $this->redirectIntended(route('dashboard'));
+    } elseif ($user->role?->name === 'emprendedor') {
+        $this->redirectIntended(route('dashboard.emprendedor'));
+    }
+}
+
 };
 ?>
 
