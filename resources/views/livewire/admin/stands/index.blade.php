@@ -84,7 +84,7 @@ new class extends Component {
 
 <section class="w-full space-y-6">
     @include('partials.stands-heading')
-    <x-layouts.admin.layoutstands :heading="__('Gestión de Stands')" :subheading="__('Selecciona un evento y gestiona sus stands')">
+    <x-stands.layout :heading="__('Gestión de Stands')" :subheading="__('Selecciona un evento y gestiona sus stands')">
         
 
         <div class="space-y-4">
@@ -122,7 +122,7 @@ new class extends Component {
                 {{ __('Guardar Stands') }}
             </flux:button>
         </div>
-    </x-settings.layout>
+    </x-stands.layout>
 </section>
 
 

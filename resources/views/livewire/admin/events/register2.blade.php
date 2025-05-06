@@ -73,7 +73,7 @@ new class extends Component {
 <section class="w-full space-y-6">
     @include('partials.events-heading')
 
-    <x-layouts.admin.layoutevents>
+    <x-events.layout>
         <div class="space-y-4">
             @foreach ($eventos as $index => $evento)
                 <div class="p-4 space-y-4">
@@ -132,6 +132,6 @@ new class extends Component {
             </x-action-message>
 
         </div>
-    </x-settings.layoutevents>
+    </x-events.layout>
 </section>
 

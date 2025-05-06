@@ -129,7 +129,7 @@ new class extends Component
 <section class="w-full space-y-6">
     @include('partials.stands-heading')
 
-    <x-layouts.admin.layoutstands
+    <x-stands.layout
         :heading="__('Gestión de Stands por Evento')" 
         :subheading="__('Selecciona un evento para ver y administrar sus stands')"
     >
@@ -189,6 +189,6 @@ new class extends Component
                 </div>
             @endif
         </div>
-    </x-settings.layoutstands>
+    </x-stands.layout>  
 </section>
 

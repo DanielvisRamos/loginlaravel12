@@ -66,7 +66,7 @@ new class extends Component {
 
 <section class="w-full space-y-6">
     @include('partials/entrepreneurs-heading')
-    <x-layouts.admin.layoutentrepreneurs>
+    <x-entrepreneurs.layout>
     <div class="flex justify-end mb-4">
         <flux:button wire:click="downloadReport">
             Descargar PDF
@@ -181,7 +181,7 @@ new class extends Component {
     <div class="mt-4 text-gray-700 dark:text-gray-300">
         {{ $this->users()->links() }}
     </div>
-    </x-settings.layoutentrepreneurs>
+    </x-entrepreneurs.layout>
 
 
 

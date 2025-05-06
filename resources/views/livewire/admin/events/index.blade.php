@@ -118,7 +118,7 @@ new class extends Component {
 <section class="w-full space-y-6">
     @include('partials.events-heading')
 
-    <x-layouts.admin.layoutevents>
+    <x-events.layout>
         <div class="flex justify-end mb-4">
             <flux:button wire:click="downloadReport">
                 Descargar PDF
@@ -250,5 +250,5 @@ new class extends Component {
             {{ $this->events->links() }}
         </div>
 
-    </x-settings.layoutevents>
+    </x-events.layout>
 </section>
