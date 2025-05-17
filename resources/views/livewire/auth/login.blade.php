@@ -38,7 +38,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     if ($user->role?->name === 'admin') {
         $this->redirectIntended(route('dashboard'));
     } elseif ($user->role?->name === 'emprendedor') {
-        $this->redirectIntended(route('dashboard.emprendedor'));
+        $this->redirectIntended(route('dashboard.entrepreneur'));
     }
 }
 
