@@ -129,10 +129,6 @@ new class extends Component
 <section class="w-full space-y-6">
     @include('partials.stands-heading')
 
-    <x-stands.layout
-        :heading="__('Gestión de Stands por Evento')" 
-        :subheading="__('Selecciona un evento para ver y administrar sus stands')"
-    >
     <flux:button variant="primary" wire:click="exportarReportePDF" class="mt-2">
     {{ __('Exportar Reporte en PDF') }}
 </flux:button>
@@ -189,6 +185,5 @@ new class extends Component
                 </div>
             @endif
         </div>
-    </x-stands.layout>  
 </section>
 

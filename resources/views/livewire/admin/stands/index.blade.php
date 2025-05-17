@@ -84,8 +84,7 @@ new class extends Component {
 
 <section class="w-full space-y-6">
     @include('partials.stands-heading')
-    <x-stands.layout :heading="__('Gestión de Stands')" :subheading="__('Selecciona un evento y gestiona sus stands')">
-        
+
 
         <div class="space-y-4">
             <flux:select wire:model.live="eventoSeleccionado" :label="__('Seleccionar evento')" required>
@@ -122,7 +121,6 @@ new class extends Component {
                 {{ __('Guardar Stands') }}
             </flux:button>
         </div>
-    </x-stands.layout>
 </section>
 
 

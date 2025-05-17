@@ -117,8 +117,6 @@ new class extends Component {
 
 <section class="w-full space-y-6">
     @include('partials.events-heading')
-
-    <x-events.layout>
         <div class="flex justify-end mb-4">
             <flux:button wire:click="downloadReport">
                 Descargar PDF
@@ -133,10 +131,10 @@ new class extends Component {
         <!-- Tabla de eventos -->
         <div class="overflow-x-auto">
             <table class="min-w-full">
-                <thead class="border-b border-gray-300 dark:border-gray-600">
+                <thead class="border-b border-[var(--color-border)]">
                     <tr>
                         <th wire:click="sort('name')"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                         <div class="flex items-center gap-1">
                             {{ __('Nombre') }}
                             @if ($sortBy === 'name')
@@ -149,55 +147,57 @@ new class extends Component {
                         </div>
                     </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                             {{ __('Descripción') }}
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                             {{ __('Dirección') }}
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                             {{ __('Fechas') }}
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                             {{ __('Estado') }}
                         </th>
                         <th
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)] uppercase tracking-wider cursor-pointer hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] transition-colors">
                             {{ __('Acciones') }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($this->events as $event)
-                        <tr class="border-b border-gray-300 dark:border-gray-600">
+                        <tr class="border-b border-[var(--color-border)]">
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                                 {{ $event->name }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                            <td class="px-6 py-4 text-sm text-[var(--color-foreground)]">
                                 {{ Str::limit($event->description, 50) }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                            <td class="px-6 py-4 text-sm text-[var(--color-foreground)]">
                                 {{ $event->address }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                            <td class="px-6 py-4 text-sm text-[var(--color-foreground)]">
                                 {{ $event->start_date }}<br>{{ $event->end_date }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                            <td class="px-6 py-4 text-sm text-[var(--color-foreground)]">
                                 <flux:badge variant="pill"
                                     color="{{ $event->estado === 'cursando' ? 'lime' : 'gray' }}">
                                     {{ ucfirst($event->estado) }}
                                 </flux:badge>
                             </td>
-                            <td class="px-6 py-4 text-sm text-right">
+                            <td class="px-6 py-4 text-sm text-right space-x-2">
+                                <div class="flex flex-row flex-nowrap justify-end items-center gap-2">
                                 <!-- Botón de editar -->
                                 <flux:modal.trigger name="edit-event-{{ $event->id }}"
                                     wire:click="editEvent({{ $event->id }})"
                                     wire:key="trigger-{{ $event->id }}">
                                     <flux:button icon="pencil">Editar</flux:button>
                                 </flux:modal.trigger>
+                                </div>
 
                             </td>
                         </tr>
@@ -249,6 +249,4 @@ new class extends Component {
         <div class="mt-4 dark:bg-transparent dark:text-white">
             {{ $this->events->links() }}
         </div>
-
-    </x-events.layout>
 </section>

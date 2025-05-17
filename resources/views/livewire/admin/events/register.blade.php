@@ -73,44 +73,29 @@ new class extends Component {
 <section class="w-full space-y-6">
     @include('partials.events-heading')
 
-    <x-settings.layoutevents :subheading="__('Crea los eventos del sakura Fest aqui!')">
         <div class="space-y-4">
             @foreach ($eventos as $index => $evento)
-                <div class="p-4 space-y-4">
+                <div class="relative overflow-hidden rounded-xl border border-border bg-card text-card-foreground p-6">
                     <flux:input wire:model="eventos.{{ $index }}.name" :label="__('Nombre del evento')" type="text" />
-                    @error('eventos.' . $index . '.name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
+
 
                     <flux:input wire:model="eventos.{{ $index }}.description" :label="__('Descripción del evento')" type="text" />
-                    @error('eventos.' . $index . '.description')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
+
 
                     <flux:input wire:model="eventos.{{ $index }}.address" :label="__('Dirección del evento')" type="text" />
-                    @error('eventos.' . $index . '.address')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
 
                     <flux:input wire:model="eventos.{{ $index }}.start_date" :label="__('Fecha Inicio')" type="datetime-local" />
-                    @error('eventos.' . $index . '.start_date')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
+
 
                     <flux:input wire:model="eventos.{{ $index }}.end_date" :label="__('Fecha Fin')" type="datetime-local" />
-                    @error('eventos.' . $index . '.end_date')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
 
                     <flux:select wire:model="eventos.{{ $index }}.estado" :label="__('Estado')">
                         <option value="cursando">{{ __('Cursando') }}</option>
                         <option value="culminado">{{ __('Culminado') }}</option>
                     </flux:select>
-                    @error('eventos.' . $index . '.estado')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
 
-                    <flux:button wire:click="quitarEvento({{ $index }})" variant="danger" size="sm">
+
+                    <flux:button wire:click="quitarEvento({{ $index }})" variant="danger" size="sm" class="p-2 mt-2">
                         - {{ __('Quitar') }}
                     </flux:button>
                 </div>
@@ -132,6 +117,5 @@ new class extends Component {
             </x-action-message>
 
         </div>
-    </x-settings.layoutevents>
 </section>
 
