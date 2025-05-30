@@ -47,5 +47,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('stands.admin');
     volt::route('Entrepreneurship' , 'admin.entrepreneurship.index')->name('entrepreneurship');
 });
+// Rutas exclusivas para EMPRENDEDOR
+Route::middleware(['auth', 'role:emprendedor'])->group(function () {
+    Volt::route('entrepreneurship/user', 'entrepreneurs.Entrepreneurship.index')
+        ->name('entrepreneurshipUser');
+});
 
 require __DIR__ . '/auth.php';

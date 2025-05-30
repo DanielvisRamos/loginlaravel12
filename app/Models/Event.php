@@ -25,7 +25,7 @@ class Event extends Model
     }
     public function stands()
     {
-        return $this->hasMany(Stand::class);
+        return $this->belongsTo(Stand::class);
     }
 
     public function delete()

@@ -32,7 +32,7 @@
     <h2>Reporte de Eventos</h2>
     <p>Fecha de generación: {{ now()->format('d/m/Y H:i') }}</p>
     <p>Total de Emprendedores: {{ $entrepreneurs->count() }}</p>
-    <p>realizado por: {{ auth()->user()->name }} {{ auth()->user()->surname }}</p>
+    <p>Realizado por: {{ auth()->user()->name }} {{ auth()->user()->surname }}</p>
     <table>
         <thead>
             <tr>

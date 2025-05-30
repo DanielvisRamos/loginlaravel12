@@ -8,41 +8,73 @@
 <body class="min-h-screen bg-background text-foreground">
     <flux:sidebar sticky stashable class="border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+        @auth
+            @php
+                $role = Auth::user()->role?->name; // Asegúrate de tener la relación role() definida en el modelo User
+            @endphp
+            @if ($role === 'admin')
+                <a href="{{ route('dashboard') }}"
+                    class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-sidebar-foreground" wire:navigate>
+                    <x-app-logo />
+                </a>
+            @elseif ($role === 'emprendedor')
+                <a href="{{ route('dashboard.entrepreneur') }}"
+                    class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-sidebar-foreground" wire:navigate>
+                    <x-app-logo />
+                </a>
+            @endif
+            <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
 
-        <a href="{{ route('dashboard') }}"
-            class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-sidebar-foreground" wire:navigate>
-            <x-app-logo />
-        </a>
+            @if ($role === 'admin')
+                <flux:navlist variant="outline"
+                    class="[--navlist-accent:var(--sidebar-accent)] [--navlist-accent-foreground:var(--sidebar-accent-foreground)]">
 
-        <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
-        
-        <flux:navlist variant="outline" class="[--navlist-accent:var(--sidebar-accent)] [--navlist-accent-foreground:var(--sidebar-accent-foreground)]">
+                    <flux:navlist.item icon="home" :href="route('dashboard')"
+                        :current="request() -> routeIs('dashboard')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </flux:navlist.item>
 
-            <flux:navlist.item icon="home" :href="route('dashboard')" :current="request() -> routeIs('dashboard')"
-                wire:navigate>
-                {{ __('Dashboard') }}
-            </flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('entrepreneurs')"
+                        :current="request() -> routeIs('entrepreneurs')" wire:navigate>
+                        {{ __('Entrepreneurs') }}
+                    </flux:navlist.item>
 
-            <flux:navlist.item icon="users" :href="route('entrepreneurs')"
-                :current="request() -> routeIs('entrepreneurs')" wire:navigate>
-                {{ __('Entrepreneurs') }}
-            </flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('entrepreneurship')"
+                        :current="request() -> routeIs('entrepreneurship')" wire:navigate>
+                        {{ __('Entrepreneurship') }}
+                    </flux:navlist.item>
 
-            <flux:navlist.item icon="users" :href="route('entrepreneurship')"
-                :current="request() -> routeIs('entrepreneurship')" wire:navigate>
-                {{ __('Entrepreneurship') }}
-            </flux:navlist.item>
+                    <flux:navlist.group expandable :heading="__('Events')" icon="calendar-days" class="hidden lg:grid">
+                        <flux:navlist.item :href="route('events')" wire:navigate>{{ __('Manage Events') }}
+                        </flux:navlist.item>
+                        <flux:navlist.item :href="route('events.register')" wire:navigate>{{ __('Create Events') }}
+                        </flux:navlist.item>
+                    </flux:navlist.group>
 
-            <flux:navlist.group expandable :heading="__('Events')"  icon="calendar-days" class="hidden lg:grid">
-                <flux:navlist.item :href="route('events')" wire:navigate>{{ __('Manage Events') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('events.register')" wire:navigate>{{ __('Create Events') }}</flux:navlist.item>
-            </flux:navlist.group>
+                    <flux:navlist.group expandable :heading="__('Stands')" icon="calendar-days" class="hidden lg:grid">
+                        <flux:navlist.item :href="route('stands.admin')" wire:navigate>{{ __('Manage stands') }}
+                        </flux:navlist.item>
+                        <flux:navlist.item :href="route('stands')" wire:navigate>{{ __('Add stands') }}
+                        </flux:navlist.item>
+                    </flux:navlist.group>
+                </flux:navlist>
+            @elseif ($role === 'emprendedor')
+                <flux:navlist variant="outline"
+                    class="[--navlist-accent:var(--sidebar-accent)] [--navlist-accent-foreground:var(--sidebar-accent-foreground)]">
 
-            <flux:navlist.group expandable :heading="__('Stands')" icon="calendar-days" class="hidden lg:grid">
-                <flux:navlist.item :href="route('stands.admin')" wire:navigate>{{ __('Manage stands') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('stands')" wire:navigate>{{ __('Add stands') }}</flux:navlist.item>
-            </flux:navlist.group>
-        </flux:navlist>
+                    <flux:navlist.item icon="home" :href="route('dashboard.entrepreneur')"
+                        :current="request() -> routeIs('dashboard.entrepreneur')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </flux:navlist.item>
+
+                    <flux:navlist.item icon="users" :href="route('entrepreneurshipUser')"
+                        :current="request() -> routeIs('entrepreneurshipUser')" wire:navigate>
+                        {{ __('Entrepreneurship') }}
+                    </flux:navlist.item>
+                </flux:navlist>
+            @endif
+        @endauth
+
 
         <flux:spacer />
 

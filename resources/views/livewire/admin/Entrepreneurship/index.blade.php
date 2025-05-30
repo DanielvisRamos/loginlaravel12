@@ -50,8 +50,7 @@ new class extends Component {
 
 
 <section class="w-full space-y-6">
-    <flux:heading size="xl">Gestión de Emprendimientos</flux:heading>
-
+    @include('partials/entrepreneurship-heading')
     <div class="flex justify-end p-3">
         <flux:button wire:click="downloadReport">Descargar PDF</flux:button>
     </div>
