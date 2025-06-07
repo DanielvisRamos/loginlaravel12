@@ -10,15 +10,15 @@
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
         @auth
             @php
-                $role = Auth::user()->role?->name; // Asegúrate de tener la relación role() definida en el modelo User
+                $role = Auth::user()->role?->name;
             @endphp
             @if ($role === 'admin')
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('admin.dashboard') }}"
                     class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-sidebar-foreground" wire:navigate>
                     <x-app-logo />
                 </a>
             @elseif ($role === 'emprendedor')
-                <a href="{{ route('dashboard.entrepreneur') }}"
+                <a href="{{ route('entrepreneur.dashboard') }}"
                     class="me-5 flex items-center space-x-2 rtl:space-x-reverse text-sidebar-foreground" wire:navigate>
                     <x-app-logo />
                 </a>
@@ -29,47 +29,58 @@
                 <flux:navlist variant="outline"
                     class="[--navlist-accent:var(--sidebar-accent)] [--navlist-accent-foreground:var(--sidebar-accent-foreground)]">
 
-                    <flux:navlist.item icon="home" :href="route('dashboard')"
-                        :current="request() -> routeIs('dashboard')" wire:navigate>
+                    <flux:navlist.item icon="home" :href="route('admin.dashboard')"
+                        :current="request()->routeIs('admin.dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:navlist.item>
 
-                    <flux:navlist.item icon="users" :href="route('entrepreneurs')"
-                        :current="request() -> routeIs('entrepreneurs')" wire:navigate>
+                    <flux:navlist.item icon="users" :href="route('admin.entrepreneurs.index')"
+                        :current="request()->routeIs('admin.entrepreneurs.index')" wire:navigate>
                         {{ __('Entrepreneurs') }}
                     </flux:navlist.item>
 
-                    <flux:navlist.item icon="users" :href="route('entrepreneurship')"
-                        :current="request() -> routeIs('entrepreneurship')" wire:navigate>
+                    <flux:navlist.item icon="briefcase" :href="route('admin.entrepreneurships.index')"
+                        :current="request()->routeIs('admin.entrepreneurships.index')" wire:navigate>
                         {{ __('Entrepreneurship') }}
                     </flux:navlist.item>
 
                     <flux:navlist.group expandable :heading="__('Events')" icon="calendar-days" class="hidden lg:grid">
-                        <flux:navlist.item :href="route('events')" wire:navigate>{{ __('Manage Events') }}
+                        <flux:navlist.item :href="route('admin.events.index')" wire:navigate>{{ __('Manage Events') }}
                         </flux:navlist.item>
-                        <flux:navlist.item :href="route('events.register')" wire:navigate>{{ __('Create Events') }}
+                        <flux:navlist.item :href="route('admin.events.create')" wire:navigate>{{ __('Create Events') }}
                         </flux:navlist.item>
                     </flux:navlist.group>
 
-                    <flux:navlist.group expandable :heading="__('Stands')" icon="calendar-days" class="hidden lg:grid">
-                        <flux:navlist.item :href="route('stands.admin')" wire:navigate>{{ __('Manage stands') }}
+                    <flux:navlist.group expandable :heading="__('Stands')" icon="stand" class="hidden lg:grid">
+                        <flux:navlist.item :href="route('admin.stands.index')" wire:navigate>{{ __('Manage stands') }}
                         </flux:navlist.item>
-                        <flux:navlist.item :href="route('stands')" wire:navigate>{{ __('Add stands') }}
+                        <flux:navlist.item :href="route('admin.stands.manage')" wire:navigate>{{ __('Manage stand details') }}
                         </flux:navlist.item>
                     </flux:navlist.group>
+
+                    <flux:navlist.item icon="ticket" :href="route('admin.reservations.index.admin')"
+                        :current="request()->routeIs('admin.reservations.index.admin')" wire:navigate>
+                        {{ __('Reservaciones') }}
+                    </flux:navlist.item>
+
                 </flux:navlist>
             @elseif ($role === 'emprendedor')
                 <flux:navlist variant="outline"
                     class="[--navlist-accent:var(--sidebar-accent)] [--navlist-accent-foreground:var(--sidebar-accent-foreground)]">
 
-                    <flux:navlist.item icon="home" :href="route('dashboard.entrepreneur')"
-                        :current="request() -> routeIs('dashboard.entrepreneur')" wire:navigate>
+                    <flux:navlist.item icon="home" :href="route('entrepreneur.dashboard')"
+                        :current="request()->routeIs('entrepreneur.dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:navlist.item>
 
-                    <flux:navlist.item icon="users" :href="route('entrepreneurshipUser')"
-                        :current="request() -> routeIs('entrepreneurshipUser')" wire:navigate>
+                    <flux:navlist.item icon="briefcase" :href="route('entrepreneur.entrepreneurships.show')"
+                        :current="request()->routeIs('entrepreneur.entrepreneurships.show')" wire:navigate>
                         {{ __('Entrepreneurship') }}
+                    </flux:navlist.item>
+
+                    <flux:navlist.item icon="calendar" :href="route('entrepreneur.reservations.index')"
+                        :current="request()->routeIs('entrepreneur.reservations.index')" wire:navigate>
+                        {{ __('Mis Reservas') }}
                     </flux:navlist.item>
                 </flux:navlist>
             @endif
@@ -91,9 +102,8 @@
             </flux:navlist.item>
         </flux:navlist>
 
-        <!-- Desktop User Menu -->
         <flux:dropdown position="bottom" align="start">
-            <flux:profile :name="auth() -> user() -> name" :initials="auth() -> user() -> initials()"
+            <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
                 icon-trailing="chevrons-up-down" class="hover:bg-sidebar-accent/20 text-sidebar-foreground" />
 
             <flux:menu class="w-[220px] bg-sidebar-accent border border-sidebar-border">
@@ -139,14 +149,13 @@
         </flux:dropdown>
     </flux:sidebar>
 
-    <!-- Mobile User Menu -->
     <flux:header class="lg:hidden bg-sidebar-accent border-b border-sidebar-border">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <flux:spacer />
 
         <flux:dropdown position="top" align="end">
-            <flux:profile :initials="auth() -> user() -> initials()" icon-trailing="chevron-down"
+            <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down"
                 class="hover:bg-sidebar-accent/20 text-sidebar-foreground" />
 
             <flux:menu class="bg-sidebar-accent border border-sidebar-border">

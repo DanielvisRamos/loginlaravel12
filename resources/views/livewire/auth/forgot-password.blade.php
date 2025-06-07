@@ -4,35 +4,44 @@ use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
+// Se define el layout que utilizará este componente.
 new #[Layout('components.layouts.auth')] class extends Component {
+    // Propiedad para almacenar la dirección de correo electrónico del usuario.
     public string $email = '';
 
     /**
-     * Send a password reset link to the provided email address.
+     * Envía un enlace de restablecimiento de contraseña a la dirección de correo electrónico proporcionada.
+     * Valida que el campo 'email' sea requerido, de tipo string y tenga un formato de correo electrónico válido.
+     * Luego, utiliza el facade 'Password' para enviar el enlace de restablecimiento.
+     * Finalmente, almacena un mensaje de estado en la sesión para informar al usuario.
+     *
+     * @return void
      */
     public function sendPasswordResetLink(): void
     {
+        // Valida que la dirección de correo electrónico haya sido ingresada y tenga un formato válido.
         $this->validate([
             'email' => ['required', 'string', 'email'],
         ]);
 
+        // Envía el enlace de restablecimiento de contraseña a la dirección de correo electrónico proporcionada.
         Password::sendResetLink($this->only('email'));
 
+        // Almacena un mensaje de estado en la sesión para informar al usuario
+        // que se enviará un enlace de restablecimiento si la cuenta existe.
         session()->flash('status', __('A reset link will be sent if the account exists.'));
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header 
-        :title="__('¿Olvidaste tu contraseña?')" 
-        :description="__('Ingresa tu correo electrónico para recibir un enlace de restablecimiento')" 
+    <x-auth-header
+        :title="__('¿Olvidaste tu contraseña?')"
+        :description="__('Ingresa tu correo electrónico para recibir un enlace de restablecimiento')"
     />
 
-    <!-- Estado de la sesión -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form wire:submit="sendPasswordResetLink" class="flex flex-col gap-6">
-        <!-- Dirección de correo -->
         <flux:input
             wire:model="email"
             :label="__('Correo electrónico')"
@@ -52,4 +61,3 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <flux:link :href="route('login')" wire:navigate>{{ __('iniciar sesión') }}</flux:link>
     </div>
 </div>
-

@@ -7,28 +7,47 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Phone extends Model
 {
+    /**
+     * Los atributos que se pueden asignar masivamente.
+     * Estos campos pueden ser llenados al crear o actualizar un modelo usando métodos como `create` o `update`.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'phone_number',
-        'estado',
+        'status', // Se actualizó 'estado' a 'status' para consistencia con la base de datos.
     ];
 
-    // Estados permitidos
-    const ESTADO_ACTIVO = 'activo';
-    const ESTADO_INACTIVO = 'inactivo';
-    const ESTADO_ELIMINADO = 'eliminado';
+    /**
+     * Constantes para los posibles valores del campo 'status'.
+     * Esto facilita el uso de estos valores en el código de una manera más legible y evita errores de escritura.
+     */
+    const STATUS_ACTIVE = 'active';   // Teléfono activo.
+    const STATUS_INACTIVE = 'inactive'; // Teléfono inactivo.
+    const STATUS_DELETED = 'deleted';  // Teléfono marcado como eliminado (soft delete personalizado).
 
-    // Relación: Un teléfono pertenece a un usuario
+    /**
+     * Define la relación: Un teléfono pertenece a un usuario.
+     * Esta relación se establece con el modelo 'User' a través de la clave foránea 'user_id'.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // Eliminación lógica: en vez de borrar, cambia a 'eliminado'
+    /**
+     * Sobrescribe el método "delete" del modelo.
+     * En lugar de eliminar el registro de la base de datos, este método actualiza el campo 'status' a 'deleted'.
+     * Esto implementa un tipo de "soft delete" personalizado.
+     *
+     * @return void
+     */
     public function delete()
     {
-        $this->estado = self::ESTADO_ELIMINADO;
-        $this->save();
+        $this->status = self::STATUS_DELETED; // Establece el estado a 'deleted'.
+        $this->save();                       // Guarda los cambios en la base de datos.
     }
 }
-// En este modelo, hemos definido los estados permitidos como constantes para facilitar su uso y evitar errores tipográficos.

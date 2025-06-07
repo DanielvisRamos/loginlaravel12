@@ -8,33 +8,43 @@ return new class extends Migration
 {
     /**
      * Ejecuta la migración.
+     * Este método crea la tabla 'entrepreneurships' en la base de datos.
+     *
+     * @return void
      */
     public function up(): void
     {
         Schema::create('entrepreneurships', function (Blueprint $table) {
-            $table->id(); // ID principal del emprendimiento
-            $table->string('name', 255); // Nombre del emprendimiento
-            $table->text('description')->nullable(); // Descripción opcional
-            $table->string('email', 255); // Correo electrónico del emprendimiento
-            $table->json('social_networks')->nullable(); // Redes sociales en formato JSON
-            $table->date('registration_date'); // Fecha de registro del emprendimiento
-            $table->string('logo_path')->nullable(); // Ruta del logo del emprendimiento
+            $table->id(); // Columna de ID autoincremental (clave primaria)
+            $table->string('name', 255); // Columna para el nombre del emprendimiento (cadena de hasta 255 caracteres)
+            $table->text('description')->nullable(); // Columna para la descripción (texto largo, puede ser nulo)
+            $table->string('email', 255); // Columna para el correo electrónico del emprendimiento (cadena de hasta 255 caracteres)
+            $table->text('social_networks')->nullable(); // Columna para las redes sociales (texto, puede ser nulo)
+            $table->date('registration_date'); // Columna para la fecha de registro (solo fecha)
+            $table->string('logo_path')->nullable(); // Columna para la ruta del logo (cadena, puede ser nulo)
 
-            // Estado: 'activo' o 'eliminado', por defecto 'activo'
-            $table->enum('estado', ['activo', 'eliminado'])->default('activo'); 
+            // Columna para el estado del emprendimiento.
+            // Se ha cambiado de 'estado' a 'status' para consistencia con el modelo.
+            // Los valores permitidos son 'active' y 'deleted', con 'active' como valor por defecto.
+            $table->enum('status', ['active', 'deleted'])->default('active');
 
-            // Claves foráneas
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relación con usuarios
+            // Clave foránea que relaciona el emprendimiento con un usuario.
+            // 'user_id' hace referencia a la columna 'id' de la tabla 'users'.
+            // Si el usuario asociado es eliminado, el emprendimiento también se eliminará (onDelete('cascade')).
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
-            $table->timestamps(); // created_at y updated_at
+            $table->timestamps(); // Agrega las columnas 'created_at' y 'updated_at' automáticamente.
         });
     }
 
     /**
      * Revierte la migración.
+     * Este método se ejecuta cuando se hace un 'migrate:rollback', eliminando la tabla 'entrepreneurships'.
+     *
+     * @return void
      */
     public function down(): void
     {
-        Schema::dropIfExists('entrepreneurships');
+        Schema::dropIfExists('entrepreneurships'); // Elimina la tabla 'entrepreneurships' si existe.
     }
 };

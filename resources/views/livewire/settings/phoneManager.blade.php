@@ -19,7 +19,7 @@ new class extends Component
     {
         $this->phones = Auth::user()
             ->phones()
-            ->where('estado', '!=', Phone::ESTADO_ELIMINADO)
+            ->where('status', '!=', Phone::STATUS_DELETED)
             ->get()
             ->toArray();
     }
@@ -68,7 +68,7 @@ new class extends Component
             if (!empty(trim($phone))) {
                 $user->phones()->create([
                     'phone_number' => $phone,
-                    'estado' => Phone::ESTADO_ACTIVO,
+                    'status' => Phone::STATUS_ACTIVE,
                 ]);
             }
         }
@@ -89,7 +89,7 @@ new class extends Component
 
         Auth::user()->phones()
             ->where('id', $phone['id'])
-            ->update(['estado' => Phone::ESTADO_ELIMINADO]);
+            ->update(['status' => Phone::STATUS_DELETED]);
 
         unset($this->phones[$index]);
         $this->phones = array_values($this->phones);
@@ -113,18 +113,15 @@ new class extends Component
 
 <section class="w-full">
     <x-settings.layout :heading="__('Teléfonos')" :subheading="__('Administra los teléfonos registrados en tu cuenta')">
-        <!-- Mensajes de estado -->
         <div class="space-y-3 mb-6">
             <x-action-message class="bg-trasparent text-green-700 rounded-lg" on="phones-saved">
-                <div class="flex items-center gap-2"> 
+                <div class="flex items-center gap-2">
                     <x-icon name="check-circle" class="w-5 h-5" />
                     <span>{{ __('Teléfonos guardados correctamente.') }}</span>
             </x-action-message>
-
         </div>
 
         <form wire:submit.prevent="savePhones" class="space-y-6">
-            <!-- Sección de teléfonos existentes -->
             <div class="bg-white dark:bg-transparent rounded-lg shadow-sm p-6">
                 <h3 class="text-base font-medium text-gray-900 dark:text-gray-100 mb-4">
                     {{ __('Teléfonos Registrados') }}
@@ -138,6 +135,9 @@ new class extends Component
                                     placeholder="Ej: +582123456789" :label="__('Teléfono').
                                     ' '.($index + 1)"
                                     class="w-full" />
+                                @error('phones.' . $index . '.phone_number')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
                             <flux:button variant="danger" wire:click="removePhone({{ $index }})" type="button"
                                 size="sm" title="{{ __('Eliminar teléfono') }}" class="shrink-0 p-4"
@@ -152,7 +152,6 @@ new class extends Component
                 </div>
             </div>
 
-            <!-- Sección para agregar nuevos teléfonos -->
             <div class="bg-white dark:bg-transparent rounded-lg shadow-sm p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-base font-medium text-gray-900 dark:text-gray-100">
@@ -177,6 +176,9 @@ new class extends Component
                                         :label="__('Nuevo teléfono').
                                         ' '.($index + 1)" class="w-full"
                                         autofocus="{{ $index === count($newPhones) - 1 ? 'true' : 'false' }}" />
+                                    @error('newPhones.' . $index)
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <flux:button variant="danger" wire:click="removeNewPhoneField({{ $index }})"
                                     type="button" size="sm" title="{{ __('Quitar este teléfono') }}"
@@ -199,7 +201,6 @@ new class extends Component
                 @endif
             </div>
 
-            <!-- Botón de guardado -->
             @if (count($phones) > 0 || $showNewPhoneFields)
                 <div class="flex justify-end">
                     <flux:button variant="primary" type="submit" class="px-6 py-2">

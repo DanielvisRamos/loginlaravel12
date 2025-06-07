@@ -6,30 +6,49 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
+// Se define el layout que utilizará este componente.
 new #[Layout('components.layouts.auth')] class extends Component {
     /**
-     * Send an email verification notification to the user.
+     * Envía una notificación de verificación de correo electrónico al usuario.
+     * Si el usuario ya ha verificado su correo electrónico, lo redirige al dashboard
+     * correspondiente a su rol. Si no, envía la notificación y almacena un estado
+     * en la sesión para mostrar un mensaje al usuario.
+     *
+     * @return void
      */
     public function sendVerification(): void
     {
+        // Verifica si el usuario ya ha verificado su correo electrónico.
         if (Auth::user()->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
-
+            // Redirige al usuario al dashboard según su rol.
+            $user = Auth::user();
+            if ($user->role?->name === 'admin') {
+                $this->redirectIntended(default: route('admin.dashboard'), navigate: true);
+            } elseif ($user->role?->name === 'emprendedor') {
+                $this->redirectIntended(default: route('entrepreneur.dashboard'), navigate: true);
+            } else {
+                $this->redirectIntended(default: route('home'), navigate: true);
+            }
             return;
         }
 
+        // Envía la notificación de verificación de correo electrónico al usuario.
         Auth::user()->sendEmailVerificationNotification();
 
+        // Almacena un estado en la sesión para indicar que se ha enviado el enlace de verificación.
         Session::flash('status', 'verification-link-sent');
     }
 
     /**
-     * Log the current user out of the application.
+     * Cierra la sesión del usuario actual en la aplicación.
+     * Utiliza la acción de cierre de sesión proporcionada y luego redirige al usuario a la página de inicio.
+     *
+     * @param Logout $logout La acción de cierre de sesión.
+     * @return void
      */
     public function logout(Logout $logout): void
     {
         $logout();
-
         $this->redirect('/', navigate: true);
     }
 }; ?>
@@ -55,4 +74,3 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </flux:link>
     </div>
 </div>
-

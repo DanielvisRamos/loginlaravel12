@@ -4,20 +4,31 @@ use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 
+// Este componente Livewire (Volt) permite al usuario eliminar su cuenta.
 new class extends Component {
+    // Propiedad para almacenar la contraseña ingresada por el usuario para confirmar la eliminación.
     public string $password = '';
 
     /**
-     * Delete the currently authenticated user.
+     * Elimina el usuario actualmente autenticado.
+     * Valida que la contraseña ingresada sea la contraseña actual del usuario.
+     * Si la validación es exitosa, cierra la sesión del usuario y luego elimina su cuenta.
+     * Finalmente, redirige al usuario a la página de inicio.
+     *
+     * @param Logout $logout La acción para cerrar la sesión del usuario.
+     * @return void
      */
     public function deleteUser(Logout $logout): void
     {
+        // Valida que la contraseña ingresada coincida con la contraseña actual del usuario.
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
+        // Cierra la sesión del usuario y luego elimina su cuenta.
         tap(Auth::user(), $logout(...))->delete();
 
+        // Redirige al usuario a la página de inicio.
         $this->redirect('/', navigate: true);
     }
 }; ?>
@@ -45,6 +56,9 @@ new class extends Component {
             </div>
 
             <flux:input wire:model="password" :label="__('Contraseña')" type="password" />
+            @error('password')
+                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+            @enderror
 
             <div class="flex justify-end space-x-2 rtl:space-x-reverse">
                 <flux:modal.close>
@@ -56,4 +70,3 @@ new class extends Component {
         </form>
     </flux:modal>
 </section>
-

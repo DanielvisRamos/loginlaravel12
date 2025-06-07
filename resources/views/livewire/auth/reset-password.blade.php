@@ -10,60 +10,77 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Volt\Component;
 
+// Se define el layout que utilizará este componente.
 new #[Layout('components.layouts.auth')] class extends Component {
+    // Propiedad protegida que almacena el token de restablecimiento de contraseña.
     #[Locked]
     public string $token = '';
+    // Propiedad para almacenar la dirección de correo electrónico del usuario.
     public string $email = '';
+    // Propiedad para almacenar la nueva contraseña ingresada por el usuario.
     public string $password = '';
+    // Propiedad para almacenar la confirmación de la nueva contraseña.
     public string $password_confirmation = '';
 
     /**
-     * Mount the component.
+     * Monta el componente al ser inicializado.
+     * Recibe el token de restablecimiento de contraseña desde la URL
+     * y también recupera el correo electrónico si está presente en la query string.
+     *
+     * @param string $token El token de restablecimiento de contraseña.
+     * @return void
      */
     public function mount(string $token): void
     {
         $this->token = $token;
-
         $this->email = request()->string('email');
     }
 
     /**
-     * Reset the password for the given user.
+     * Restablece la contraseña del usuario.
+     * Valida el token, el correo electrónico y las nuevas contraseñas.
+     * Luego, intenta restablecer la contraseña utilizando el facade 'Password'.
+     * Si el restablecimiento es exitoso, actualiza la contraseña del usuario en la base de datos,
+     * genera un nuevo 'remember_token' y dispara el evento PasswordReset.
+     * Finalmente, redirige al usuario a la página de inicio de sesión con un mensaje de éxito
+     * o muestra un error si el restablecimiento falla.
+     *
+     * @return void
      */
     public function resetPassword(): void
     {
+        // Valida los campos del formulario de restablecimiento de contraseña.
         $this->validate([
             'token' => ['required'],
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
+        // Intenta restablecer la contraseña del usuario.
         $status = Password::reset(
             $this->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) {
+                // Actualiza la contraseña del usuario y genera un nuevo 'remember_token'.
                 $user->forceFill([
                     'password' => Hash::make($this->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
+                // Dispara el evento PasswordReset.
                 event(new PasswordReset($user));
             }
         );
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        if ($status != Password::PasswordReset) {
+        // Verifica el resultado del restablecimiento de contraseña.
+        if ($status != Password::PASSWORD_RESET) {
+            // Si hubo un error, añade un mensaje de error al campo 'email'.
             $this->addError('email', __($status));
-
             return;
         }
 
+        // Si la contraseña se restableció exitosamente, almacena un mensaje de éxito en la sesión
+        // y redirige al usuario a la página de inicio de sesión.
         Session::flash('status', __($status));
-
         $this->redirectRoute('login', navigate: true);
     }
 }; ?>
@@ -71,11 +88,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
 <div class="flex flex-col gap-6">
     <x-auth-header :title="__('Restablecer contraseña')" :description="__('Por favor, ingresa tu nueva contraseña a continuación')" />
 
-    <!-- Estado de la sesión -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form wire:submit="resetPassword" class="flex flex-col gap-6">
-        <!-- Dirección de correo electrónico -->
         <flux:input
             wire:model="email"
             :label="__('Correo electrónico')"
@@ -83,8 +98,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
             required
             autocomplete="email"
         />
+        @error('email')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
 
-        <!-- Contraseña -->
         <flux:input
             wire:model="password"
             :label="__('Contraseña')"
@@ -93,8 +110,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="new-password"
             :placeholder="__('Contraseña')"
         />
+        @error('password')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
 
-        <!-- Confirmar Contraseña -->
         <flux:input
             wire:model="password_confirmation"
             :label="__('Confirmar contraseña')"
@@ -103,6 +122,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="new-password"
             :placeholder="__('Confirmar contraseña')"
         />
+        @error('password_confirmation')
+            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+        @enderror
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">

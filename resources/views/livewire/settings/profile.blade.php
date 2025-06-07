@@ -1,31 +1,43 @@
 <?php
+
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
+// Este componente Livewire (Volt) permite al usuario actualizar su información de perfil.
 new class extends Component {
+    // Propiedades públicas para almacenar los datos del formulario.
     public string $name = '';
     public string $email = '';
     public string $surname = '';
     public string $CI = '';
-    public string $address = '';  // Inicializado como cadena vacía
+    public string $address = '';
 
     /**
-     * Mount the component.
+     * Monta el componente al ser inicializado.
+     * Carga la información del usuario autenticado para prellenar el formulario.
+     *
+     * @return void
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->surname = Auth::user()->surname;
-        $this->email = Auth::user()->email;
-        $this->CI = Auth::user()->CI;
-        $this->address = Auth::user()->address ?? '';  // Se asegura que no sea null
+        $user = Auth::user();
+        $this->name = $user->name;
+        $this->surname = $user->surname;
+        $this->email = $user->email;
+        $this->CI = $user->CI;
+        $this->address = $user->address ?? '';
     }
 
     /**
-     * Update the profile information for the currently authenticated user.
+     * Actualiza la información del perfil del usuario autenticado.
+     * Valida los datos del formulario y luego guarda los cambios en la base de datos.
+     * Si el correo electrónico ha cambiado, revoca la verificación del correo electrónico.
+     * Despacha un evento ('profile-updated') para mostrar un mensaje de éxito.
+     *
+     * @return void
      */
     public function updateProfileInformation(): void
     {
@@ -51,7 +63,11 @@ new class extends Component {
     }
 
     /**
-     * Send an email verification notification to the current user.
+     * Envía una notificación de verificación de correo electrónico al usuario actual.
+     * Si el usuario ya ha verificado su correo electrónico, lo redirige al panel de control.
+     * Al enviar el correo, establece un mensaje flash de sesión para informar al usuario.
+     *
+     * @return void
      */
     public function resendVerificationNotification(): void
     {
@@ -59,7 +75,6 @@ new class extends Component {
 
         if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false));
-
             return;
         }
 
@@ -75,18 +90,18 @@ new class extends Component {
 
     <x-settings.layout :heading="__('Perfil')" :subheading="__('Actualiza tu nombre y dirección de correo electrónico')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <!-- Campo Nombre -->
             <flux:input wire:model="name" :label="__('Nombre')" type="text" required autofocus autocomplete="name" />
+            @error('name') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
 
-            <!-- Campo Apellido -->
             <flux:input wire:model="surname" :label="__('Apellido')" type="text" required autocomplete="family-name" />
+            @error('surname') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
 
-            <!-- Campo CI -->
             <flux:input wire:model="CI" :label="__('CI')" type="text" required autocomplete="off" />
+            @error('CI') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
 
-            <!-- Campo Correo Electrónico -->
             <div>
                 <flux:input wire:model="email" :label="__('Correo electrónico')" type="email" required autocomplete="email" />
+                @error('email') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
 
                 @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div>
@@ -108,8 +123,8 @@ new class extends Component {
                 @endif
             </div>
 
-            <!-- Campo Dirección -->
             <flux:input wire:model="address" :label="__('Dirección')" type="text" autocomplete="address" />
+            @error('address') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
@@ -125,4 +140,3 @@ new class extends Component {
         <livewire:settings.delete-user-form />
     </x-settings.layout>
 </section>
-
